@@ -32,8 +32,8 @@ Python example:
 
 List of information about each split
 Each split contains an object:
-- **id** - Name of split
-- **start_time** - Timestamp
+- **purpose** - Name of split
+- **start_time** - Timestamp 
 - **end_time** - Timestamp
 - **sampling** - Sampling Object
 
