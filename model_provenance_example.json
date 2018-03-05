@@ -1,121 +1,113 @@
 {
-    "label_spec": {
-        // will a user save more or less than $50 across
-        // all his or her orders in next 56 days
-        "target_entity": "customers",
-        "event_entity": "orders",
-        "label_function": {"python": "lambda x: x['Price']*x['Discount']}",
-        "reduce": "sum",
-        "binarize": ">0 & <50",
+   "metadata": "/path/to/metadata.json", //TODO: is this where we want it?
+
+    "prediction_engineering": {
+        "labeling_function": "/path/to/labeling_function.py",
         "prediction_window": "56 days",
-        "offset": "7 days",
         "min_training_data": "28 days",
         "lead": "28 days"
     },
+
+
     "feature_engineering":{
         "method": "Deep Feature Synthesis",
         "training_window": "2 years",
-        "primitives": ["TREND", "MEAN", "STD", "WEEKEND", "PERCENTILE"],
+        "aggregate_primitives": ["TREND", "MEAN", "STD"],
+        "transform_primitives": ["WEEKEND", "PERCENTILE"],
         "ignore_variables":{
             "customers": ["age", "zipcode"],
             "products": ["brand"]
         },
-        "top_k": 100,
         // TODO: what do we want to annotate about feature selection?
         "feature_selection": {
             "method": "Logistic Regression",
             "n_features": 20
         }
     },
-    "model_search": {
+
+
+    "modeling": {
         "methods": [{"method": "RandomForestClassifer",
-                     "hyperparameters": "/path/to/ranges"},
-                    {"method": "GradientBoostingClassifier",
-                     "hyperparameters": "/path/to/ranges_2"}],
+                     "hyperparameter_options": "/path/to/random_forest.json"},
+                    {"method": "MLPClassifer",
+                     "hyperparameter_options": "/path/to/multi_layer_perceptron.json"}],
         "budget": "2 hours",
-        "automl_method": "/path/to/description.json",
-        "cost_function": "/path/to/function.py" // TODO: confirm this looks right
+        "automl_method": "/path/to/automl_specs.json",
+        "cost_function": "/path/to/cost_function.py" // TODO: confirm this looks right
     },
+
     // TODO: do we need to separate data_splits and training setup?
     "data_splits": [
         {
             "id": "train",
             "start_time": "2014/01/01",
             "end_time": "2014/06/01",
-            // TODO: should sampling be here or as a parameter to label_spec?
-            // or perhaps we should move offset, min_training_data down here?
-            "sampling": {
+            "label_search_parameters": {
                 "strategy": "random",
-                "by": "Order ID",
-                "n": 10,
-                "gap": "3 days"
+                "examples_per_instance": 10,
+                "offset": "7 days",
+                "gap": "14 days"
             }
         },
         {
-            "id": "thresh-tune",
+            "id": "threshold-tuning",
             "start_time": "2014/06/02",
             "end_time": "2015/01/01",
-            "sampling": null
+            "label_search_parameters": {"offset": "7 days"}
         },
         {
             "id": "test",
             "start_time": "2015/01/02",
             "end_time": "2015/06/01",
-            "sampling": null
+            "label_search_parameters": {"offset": "7 days"}
         }
     ],
+
     "training_setup": {
         "training": {"data_split_id": "train",
-                     "cross_validation": "false"}, // what is cross_validation intended to mean?
-        "tuning": {"data_split_id": "thresh-tune",
-                   "cross_validation": "false"},
+                     "validation_method": "default"},
+        "tuning": {"data_split_id": "threshold-tuning",
+                   "validation_method": "default"},
         "testing": {"data_split_id": "test",
-                    "cross_validation": "false"}
+                    "validation_method": "default"}
+    },
 
-    },
-    "training_results": [{
-        "random_seed": 0,
-        "threshold": 0.210,
-        "precision": 0.671,
-        "recall": 0.918,
-        "fpr": 0.102,
-        "auc": 0.890
-    },
-    {
-        "random_seed": 1,
-        "threshold": 0.214,
-        "precision": 0.702,
-        "recall": 0.904,
-        "fpr": 0.113,
-        "auc": 0.892
-    }
+    "results_on_test_split": [
+        {
+            "random_seed": 0,
+            "threshold": 0.210,
+            "precision": 0.671,
+            "recall": 0.918,
+            "fpr": 0.102,
+            "auc": 0.890
+        },
+        {
+            "random_seed": 1,
+            "threshold": 0.214,
+            "precision": 0.702,
+            "recall": 0.904,
+            "fpr": 0.113,
+            "auc": 0.892
+        }
     ],
+
     "deployment": {
-        "model": {
+        "deployment_executable": "/path/to/executable",
+        "deployment_parameters": {
             "feature_list_path": "/path/to/serialized_feature_list.p",
-            "model_path": "/path/to/serialized_fitted_model.p",
-            // TODO: what is deployment_executable?
-            "deployment_executable": "/path/to/executable",
+            "model_path": "/path/to/serialized_fitted_model.p"
             "threshold": 0.212,
         },
-        "validation": {
-            "metadata": "/path/to/metadata.json", //TODO: is this where we want it?
-            "features_ranges":{
-                "MEAN(orders.Price)": {"min": 9.50, "max": 332.30},
+        "integration_and_validation": {
+            "data_fields_used": {
+                    "customers": ["name"]
+                    "orders": ["Order Id", "Timestamp"]
+                    "products": ["Product ID", "Category"]
+                    "orders_products": ["Product Id", "Order Id", "Price", "Discount"]
+            }
+            "expected_feature_value_ranges":{
+                "MEAN(orders_products.Price)": {"min": 9.50, "max": 332.30},
                 "PERCENT(WEEKEND(orders.Timestamp))": {"min": 0, "max": 1.0},
             },
-            // TODO: change this from list to dict?
-            // TODO do we need type because it's redundant with metadata.json?
-            "data_fields_used": {
-                    "customers": ["name": ]
-                    "orders": [{"name": "Price", "type": "float", "min": 0, "max": 110},
-                               {"name": "Discount", "type": "float", "min": 0, "max": 0.40},
-                               // TODO: what to do about ranges for non-floats such as strings, dates, etc?
-                               {"name": "Timestamp", "type": "datetime", "format": "YY/mm/dd"},
-                               {"name": "Product ID", "type": "str"},
-                               {"name": "Order ID", "type": "str"}],
-                    "products": [{"name": "Category", "type": "str"},
-                                 {"name": "Product ID", "type": "str"}]
-            }
         }
 }
