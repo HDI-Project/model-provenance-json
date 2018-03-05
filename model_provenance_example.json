@@ -98,14 +98,14 @@
         },
         "integration_and_validation": {
             "data_fields_used": {
-                    "customers": ["name"]
-                    "orders": ["Order Id", "Timestamp"]
-                    "products": ["Product ID", "Category"]
+                    "customers": ["name"],
+                    "orders": ["Order Id", "Timestamp"],
+                    "products": ["Product ID", "Category"],
                     "orders_products": ["Product Id", "Order Id", "Price", "Discount"]
             }
             "expected_feature_value_ranges":{
                 "MEAN(orders_products.Price)": {"min": 9.50, "max": 332.30},
-                "PERCENT(WEEKEND(orders.Timestamp))": {"min": 0, "max": 1.0},
+                "PERCENT(WEEKEND(orders.Timestamp))": {"min": 0, "max": 1.0}
             },
         }
 }
