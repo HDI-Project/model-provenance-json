@@ -93,7 +93,7 @@
         "deployment_executable": "/path/to/executable",
         "deployment_parameters": {
             "feature_list_path": "/path/to/serialized_feature_list.p",
-            "model_path": "/path/to/serialized_fitted_model.p"
+            "model_path": "/path/to/serialized_fitted_model.p",
             "threshold": 0.212,
         },
         "integration_and_validation": {
@@ -102,10 +102,10 @@
                     "orders": ["Order Id", "Timestamp"],
                     "products": ["Product ID", "Category"],
                     "orders_products": ["Product Id", "Order Id", "Price", "Discount"]
-            }
+            },
             "expected_feature_value_ranges":{
                 "MEAN(orders_products.Price)": {"min": 9.50, "max": 332.30},
                 "PERCENT(WEEKEND(orders.Timestamp))": {"min": 0, "max": 1.0}
-            },
+            }
         }
 }
