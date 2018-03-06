@@ -19,7 +19,7 @@
             "products": ["brand"]
         },
         "feature_selection": {
-            "method": "Logistic Regression",
+            "method": "Random Forest",
             "n_features": 20
         }
     },
@@ -63,38 +63,40 @@
 
     "training_setup": {
         "training": {"data_split_id": "train",
-                     "validation_method": "default"},
+                     "validation_method": "/path/to/validation_spec_train.json"},
         "tuning": {"data_split_id": "threshold-tuning",
-                   "validation_method": "default"},
+                   "validation_method": "/path/to/validation_spec_tune.json"},
         "testing": {"data_split_id": "test",
-                    "validation_method": "default"}
+                    "validation_method": "/path/to/validation_spec_test.json"}
     },
 
-    "results_on_test_split": [
-        {
-            "random_seed": 0,
-            "threshold": 0.210,
-            "precision": 0.671,
-            "recall": 0.918,
-            "fpr": 0.102,
-            "auc": 0.890
-        },
-        {
-            "random_seed": 1,
-            "threshold": 0.214,
-            "precision": 0.702,
-            "recall": 0.904,
-            "fpr": 0.113,
-            "auc": 0.892
-        }
-    ],
+    "results": {
+      "test": [
+          {
+              "random_seed": 0,
+              "threshold": 0.210,
+              "precision": 0.671,
+              "recall": 0.918,
+              "fpr": 0.102,
+              "auc": 0.890
+          },
+          {
+              "random_seed": 1,
+              "threshold": 0.214,
+              "precision": 0.702,
+              "recall": 0.904,
+              "fpr": 0.113,
+              "auc": 0.892
+          }
+      ]
+    },
 
     "deployment": {
         "deployment_executable": "/path/to/executable",
         "deployment_parameters": {
             "feature_list_path": "/path/to/serialized_feature_list.p",
             "model_path": "/path/to/serialized_fitted_model.p",
-            "threshold": 0.212,
+            "threshold": 0.212
         },
         "integration_and_validation": {
             "data_fields_used": {
