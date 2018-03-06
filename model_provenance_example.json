@@ -9,7 +9,8 @@
     },
 
 
-    "feature_engineering":{
+    "feature_engineering":[
+      {
         "method": "Deep Feature Synthesis",
         "training_window": "2 years",
         "aggregate_primitives": ["TREND", "MEAN", "STD"],
@@ -22,7 +23,17 @@
             "method": "Random Forest",
             "n_features": 20
         }
-    },
+      },
+      {
+        "method": "Additional method",
+        "method_hyperparam1": 0,
+        "method_hyperparam2": 1,
+        "feature_selection": {
+          "method": "PCA",
+          "n_components": 20
+        }
+      }
+    ],
 
 
     "modeling": {
