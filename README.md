@@ -65,9 +65,8 @@ Each split contains an object:
 
 #### Label Search Parameters Object
 - **offset** - amount of time between successive labeling windows in search
-- **sample_strategy** - one of ["random", ]
-- **by** - Column name to group by when sampling
-- **n** - Number of elements to sample per element of "by" column
+- **strategy** - one of ["random", ]
+- **examples_per_instance** - Number of elements to sample per element of "by" column
 - **gap** - Amount of time to space between each sample of same element
 
 
@@ -90,7 +89,6 @@ Each element for each trial run is an object:
 - **recall** - float
 - **fpr** - float
 - **auc** - float
-- **feature_importances** - List of sorted feature names by importance (first is most important)
 
 
 ### Deployment
@@ -115,6 +113,5 @@ Keys are feature names values are objects containing:
 - **max** - max value
 
 ##### Data Fields Used Object
-Object listing the field names and types per table/entity used in feature engineering and fed into the machine learning model
-- **entity_name**: [{"name": "FloatFieldName", "type": "float"},
-                    {"name": "DateFieldName", "type": "datetime", "format": "YY/mm/dd"}]
+Object listing the field names per table/entity used in feature engineering and fed into the machine learning model
+- **data_fields_object**: {"entity_name": ["Field1", "Field2", "Field3"]}

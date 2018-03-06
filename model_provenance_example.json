@@ -23,15 +23,6 @@
             "method": "Random Forest",
             "n_features": 20
         }
-      },
-      {
-        "method": "Additional method",
-        "method_hyperparam1": 0,
-        "method_hyperparam2": 1,
-        "feature_selection": {
-          "method": "PCA",
-          "n_components": 20
-        }
       }
     ],
 
